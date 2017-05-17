@@ -4,8 +4,8 @@ module.exports = {
     web: {
         settings: {
             services: {
-                apiUrl: 'http://pizunhatrang.tk',
-                webUrl: 'http://pizunhatrang.tk',
+                apiUrl: 'http://www.pizunhatrang.tk',
+                webUrl: 'http://www.pizunhatrang.tk',
             },
         },
         assets: {

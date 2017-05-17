@@ -9,7 +9,6 @@
             <a href="/san-pham/{[product.slug || product._id]}" style="height:300px;background:url(/files/products/{[product._id]}/{[product.banner]}) center center no-repeat;background-size:cover;" class="item {[key==0?'active':'']}" ng-repeat="(key,product) in home.productBannerList track by product._id">
                 <div class="carousel-caption">
                     <h2 ng-bind="product.title"></h2>
-                    <p ng-bind-html="product.intro"></p>
                 </div>
             </a>
         </div>
