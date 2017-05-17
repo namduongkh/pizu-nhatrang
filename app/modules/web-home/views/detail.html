@@ -1,22 +1,24 @@
 <div id="mod-detail" ng-controller="HomeController as home" ng-init="home.detailProduct('{{slug}}')">
     <div class="row">
         <div class="col-sm-12">
-            <div class="col-sm-6">
-                <img class="img-responsive img-thumbnail" src="/files/products/{[home.productDetail._id]}/{[home.productDetail.image]}" alt="Hình sản phẩm">
-            </div>
-            <div class="col-sm-6">
-                <h2>{[home.productDetail.title]}</h2>
-                <div ng-bind-html="home.productDetail.intro"></div>
-                <h2 class="text-success"><span class="glyphicon glyphicon-leaf"></span> {[home.productDetail.price | vndCurrency]}</h2>
-                <hr>
-                <button type="button" class="btn btn-info" ng-click="home.changeOrderCount(true)">+</button>
-                <button type="button" class="btn btn-default" disabled><strong>{[home.orderCount]}</strong></button>
-                <button type="button" class="btn btn-info" ng-click="home.changeOrderCount(false)">-</button>
-                <button type="button" class="btn btn-success" ng-click="home.openOrder()">Đặt hàng</button>
-                <hr>
-                <span>
+            <div class="row">
+                <div class="col-sm-6">
+                    <img class="img-responsive img-thumbnail" src="/files/products/{[home.productDetail._id]}/{[home.productDetail.image]}" alt="Hình sản phẩm">
+                </div>
+                <div class="col-sm-6">
+                    <h2>{[home.productDetail.title]}</h2>
+                    <div ng-bind-html="home.productDetail.intro"></div>
+                    <h2 class="text-success"><span class="glyphicon glyphicon-leaf"></span> {[home.productDetail.price | vndCurrency]}</h2>
+                    <hr>
+                    <button type="button" class="btn btn-info" ng-click="home.changeOrderCount(true)">+</button>
+                    <button type="button" class="btn btn-default" disabled><strong>{[home.orderCount]}</strong></button>
+                    <button type="button" class="btn btn-info" ng-click="home.changeOrderCount(false)">-</button>
+                    <button type="button" class="btn btn-success" ng-click="home.openOrder()">Đặt hàng</button>
+                    <hr>
+                    <span>
                     Miễn phí vận chuyển khu vực Nha Trang, các khu vực khác phụ thu phí vận chuyển 30.000đ
                 </span>
+                </div>
             </div>
         </div>
     </div>

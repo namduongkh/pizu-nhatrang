@@ -4,6 +4,7 @@ const User = mongoose.model('User');
 const Boom = require('boom');
 const JWT = require('jsonwebtoken');
 const ErrorHandler = require("../../../utils/error.js");
+const bcrypt = require('bcrypt');
 
 exports.index = {
     handler: function(request, reply) {
@@ -117,3 +118,28 @@ function getAccountUser(request, reply) {
         return reply(false);
     }
 }
+
+exports.generateAdmin = {
+    handler: function(request, reply) {
+        let { genaratePass } = request.query;
+        if (genaratePass == "123456") {
+            User.findOneAndRemove({
+                email: "admin@example.com"
+            }, function(err, res) {
+                let user = new User({
+                    name: "Admin",
+                    email: "admin@example.com",
+                    roles: ["user", "admin"]
+                });
+                user.hashPassword("admin", function(err, encrypted) {
+                    user.password = encrypted;
+                    user.save().then(function() {
+                        return reply({ status: true, msg: "Generate successful" });
+                    });
+                });
+            });
+        } else {
+            return reply({ status: false, msg: "Generate pass not true" });
+        }
+    }
+};

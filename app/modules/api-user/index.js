@@ -35,6 +35,12 @@ exports.register = function(server, options, next) {
         config: Controller.account
     });
 
+    server.route({
+        method: 'GET',
+        path: '/api/user/generateAdmin',
+        config: Controller.generateAdmin
+    });
+
     next();
 };
 

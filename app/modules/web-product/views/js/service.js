@@ -12,6 +12,9 @@
             createProduct: function(data) {
                 return $http.post(apiPath + "/api/product/createProduct", data);
             },
+            updateProduct: function(data) {
+                return $http.post(apiPath + "/api/product/updateProduct", data);
+            },
             detailProduct: function(data) {
                 return $http.post(apiPath + "/api/product/detailProduct", data);
             },

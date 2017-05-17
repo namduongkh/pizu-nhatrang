@@ -28,6 +28,9 @@
     "angular-animate": "^1.6.4",
     "angular-ui-tinymce": "^0.0.18",
     "slug": "^0.9.1",
-    "magnific-popup": "^1.1.0"
+    "magnific-popup": "^1.1.0",
+    "angular-ui-router": "^1.0.3",
+    "slick-carousel": "^1.6.0",
+    "jquery-migrate": "^3.0.0"
   }
 }

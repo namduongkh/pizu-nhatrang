@@ -1,3 +1,13 @@
+.container {
+  margin-top: 80px; }
+
+footer {
+  background-color: #333; }
+
+.edit-product-image {
+  max-height: 100px;
+  display: block; }
+
 #mod-home .product-item {
   color: #555;
   margin-bottom: 20px;
@@ -52,9 +62,3 @@
 
 .spacing-20 {
   padding: 10px 0; }
-
-.container {
-  margin-top: 80px; }
-
-footer {
-  background-color: #333; }

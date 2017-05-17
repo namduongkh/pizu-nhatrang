@@ -11,10 +11,18 @@ exports.register = function(server, options, next) {
         config: HomeController.createProduct
     });
 
+
+    // PORTAL
     server.route({
         method: 'GET',
         path: '/portal/product',
         config: HomeController.listProduct
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/portal/product/{slug}/edit',
+        config: HomeController.editProduct
     });
 
     next();

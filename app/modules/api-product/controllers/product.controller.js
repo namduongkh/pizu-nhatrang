@@ -7,6 +7,8 @@ const download = require('image-downloader')
 const fs = require('fs')
 const async = require('async')
 const nodemailer = require('nodemailer');
+const Jimp = require("jimp");
+const sizeOf = require('image-size');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -30,6 +32,67 @@ function checkSlug(request, reply) {
         });
 }
 
+function genarateOtherImage(server, type, filename, width, height, mode, oldFilename) {
+    mode = mode ? mode : 'other';
+    let fullPath = global.BASE_PATH + "/public/files/" + type + "/" + filename;
+    let thumb = global.BASE_PATH + "/public/files/" + type + "/" + mode;
+    if (oldFilename) {
+        let { removePath } = server.plugins['api-upload'];
+        removePath(type + "/" + mode, oldFilename);
+    }
+    if (!fs.existsSync(thumb)) {
+        fs.mkdirSync(thumb);
+    }
+    let thumbPath = thumb + "/" + filename;
+    if (fs.existsSync(fullPath)) {
+        let size = sizeOf(fullPath);
+        if ((width && width < size.width) || (height && height < size.height)) {
+            width = width ? width : Jimp.AUTO;
+            height = height ? height : Jimp.AUTO;
+            Jimp.read(fullPath).then(function(image) {
+                image.resize(width, height) // resize
+                    // .quality(60) // set JPEG quality
+                    // .greyscale() // set greyscale
+                    .write(thumbPath); // save
+            }).catch(function(err) {
+                console.error(err);
+            });
+        }
+    }
+}
+
+function getImageFromLink(server, url, type, filename, oldFilename, callback) {
+    let ext;
+    url.replace(/\.(\w+)$/g, function(str) {
+        ext = str;
+    });
+    let productDir = global.BASE_PATH + '/public/files/' + type;
+    if (!fs.existsSync(productDir)) {
+        fs.mkdirSync(productDir);
+    };
+    let dest = productDir;
+    if (filename) {
+        dest += '/' + filename + ext;
+    }
+    const options = {
+        url: url,
+        dest: dest
+    }
+    download.image(options)
+        .then(({ filename, image }) => {
+            if (oldFilename) {
+                let { removePath } = server.plugins['api-upload'];
+                let typeDir = type;
+                removePath(typeDir, oldFilename);
+            }
+            let outFilename = filename.replace(new RegExp(productDir + "/", "g"), "");
+            callback(null, outFilename);
+        }).catch((err) => {
+            console.log("err", err);
+            callback(err);
+        })
+}
+
 exports.createProduct = {
     pre: [{
         method: checkSlug,
@@ -44,54 +107,31 @@ exports.createProduct = {
                 let parallel = [];
                 if (imageLink) {
                     parallel.push(function(cb) {
-                        let productDir = global.BASE_PATH + '/public/files/products/' + product._id;
-                        if (!fs.existsSync(productDir)) {
-                            fs.mkdirSync(productDir);
-                        };
-                        const options = {
-                            url: imageLink,
-                            dest: productDir
-                        }
-                        download.image(options)
-                            .then(({ filename, image }) => {
-                                product.image = filename.replace(productDir + "/", "");
-                                cb(null, true);
-                            }).catch((err) => {
-                                console.log("err", err);
-                                cb(err, true);
-                            })
+                        getImageFromLink(request.server, imageLink, "products/" + product._id, "image-" + new Date().getTime(), null, function(err, result) {
+                            product.image = result;
+                            genarateOtherImage(request.server, "products/" + product._id, result, 100, null, 'small');
+                            genarateOtherImage(request.server, "products/" + product._id, result, 350, null, 'medium');
+                            cb(err, result);
+                        });
                     });
                 }
                 if (bannerLink) {
                     parallel.push(function(cb) {
-                        let productDir = global.BASE_PATH + '/public/files/products/' + product._id;
-                        if (!fs.existsSync(productDir)) {
-                            fs.mkdirSync(productDir);
-                        };
-                        if (!fs.existsSync(productDir + "/banner")) {
-                            fs.mkdirSync(productDir + "/banner");
-                        };
-                        const options = {
-                            url: bannerLink,
-                            dest: productDir + "/banner"
-                        }
-                        download.image(options)
-                            .then(({ filename, image }) => {
-                                product.image = filename.replace(productDir + "/banner/", "");
-                                cb(null, true);
-                            }).catch((err) => {
-                                console.log("err", err);
-                                cb(err, true);
-                            })
+                        getImageFromLink(request.server, bannerLink, "products/" + product._id, "banner-" + new Date().getTime(), null, function(err, result) {
+                            product.banner = result;
+                            cb(err, result);
+                        });
                     });
                 }
                 async.parallel(parallel, function() {
-                    return product.save();
+                    return product.save().then(function(product) {
+                        return reply(product);
+                    });
                 });
             })
-            .then(function(product) {
-                return reply(product);
-            })
+            // .then(function(product) {
+            //     return reply(product);
+            // })
             .catch(function(err) {
                 console.log("err", err);
                 return reply(Boom.badRequest());
@@ -101,33 +141,72 @@ exports.createProduct = {
 
 exports.updateProduct = {
     handler: function(request, reply) {
-        let { productId, title, slug, image, description, price, intro } = request.payload;
-        Product.findOne({
-                _id: productId
-            })
-            .then(function(product) {
-                product.title = title;
-                product.slug = slug;
-                product.image = image;
-                product.description = description;
-                product.price = price;
-                return product.save();
-            })
-            .then(function(product) {
-                return reply(product);
-            })
+        let { productId, title, slug, imageLink, bannerLink, description, price, intro } = request.payload;
+        if (productId) {
+            Product.findOne({
+                    _id: productId
+                })
+                .then(function(product) {
+                    if (product) {
+                        product.title = title;
+                        product.slug = slug;
+                        product.description = description;
+                        product.intro = intro;
+                        product.price = price;
+                        let parallel = [];
+                        if (imageLink) {
+                            parallel.push(function(cb) {
+                                getImageFromLink(request.server, imageLink, "products/" + product._id, "image-" + new Date().getTime(), product.image, function(err, result) {
+                                    product.image = result;
+                                    genarateOtherImage(request.server, "products/" + product._id, result, 100, null, 'small', product.image);
+                                    genarateOtherImage(request.server, "products/" + product._id, result, 350, null, 'medium', product.image);
+                                    cb(err, result);
+                                });
+                            });
+                        }
+                        if (bannerLink) {
+                            parallel.push(function(cb) {
+                                getImageFromLink(request.server, bannerLink, "products/" + product._id, "banner-" + new Date().getTime(), product.banner, function(err, result) {
+                                    product.banner = result;
+                                    cb(err, result);
+                                });
+                            });
+                        }
+                        async.parallel(parallel, function() {
+                            return product.save().then(function(product) {
+                                return reply(product);
+                            });
+                        });
+                    } else {
+                        return reply(Boom.badRequest("Không có sản phẩm"));
+                    }
+                })
+                // .then(function(product) {
+                //     return reply(product);
+                // });
+                .catch(function(err) {
+                    console.log("err", err);
+                    return reply(Boom.badRequest());
+                });
+        } else {
+            return reply(Boom.badRequest("Không có sản phẩm"));
+        }
     }
 };
 
 exports.detailProduct = {
     handler: function(request, reply) {
         let { slug } = request.payload;
-        Product.findOne({
-                slug: slug
-            })
-            .then(function(product) {
-                return reply(product);
-            });
+        if (slug) {
+            Product.findOne({
+                    slug: slug
+                })
+                .then(function(product) {
+                    return reply(product);
+                });
+        } else {
+            return reply(Boom.badRequest("Không có slug sản phẩm"));
+        }
     }
 };
 

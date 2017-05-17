@@ -26,6 +26,7 @@ exports.register = function(server, options, next) {
 
     let uploadHelper = require('./util/upload')(server, options);
     server.expose('removeFolder', uploadHelper.removeFolder);
+    server.expose('removePath', uploadHelper.removePath);
 
     next();
 };

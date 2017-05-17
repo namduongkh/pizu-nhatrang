@@ -12,11 +12,11 @@
                     <th>Hành động</th>
                 </tr>
                 <tr ng-repeat="(key, product) in portal.productList">
-                    <td><img class="img-thumbnail img-responsive" ng-src="/files/products/{[product._id]}/{[product.image]}" alt="{[product.title]}" style="max-width: 100px"></td>
+                    <td><img class="img-thumbnail img-responsive" ng-src="/files/products/{[product._id]}/small/{[product.image]}" alt="{[product.title]}" style="max-width: 100px"></td>
                     <td>{[product.title]}</td>
                     <td>{[product.price | vndCurrency]}</td>
                     <td>
-                        <a href="javascript:void(0);" class="btn btn-sm btn-success">Sửa</a>
+                        <a href="/portal/product/{[product.slug]}/edit" class="btn btn-sm btn-success">Sửa</a>
                         <a href="javascript:void(0);" class="btn btn-sm btn-danger" ng-click="portal.deleteProduct(product._id, key)">Xóa</a>
                     </td>
                 </tr>

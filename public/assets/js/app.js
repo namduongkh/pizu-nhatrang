@@ -78,6 +78,13 @@
                 // console.log("resp", resp);
                 if (resp.status == 200) {
                     home.productList = resp.data;
+                    home.productBannerList = resp.data.filter(function(i) {
+                        if (i.banner) {
+                            i.intro = $sce.trustAsHtml(i.intro);
+                            return i;
+                        }
+                    });
+                    console.log(home.productBannerList);
                 }
             });
         };
@@ -184,11 +191,11 @@
 (function() {
     'use strict';
 
-    PortalProductController.$inject = ["ProductSvc", "toastr"];
+    PortalProductController.$inject = ["ProductSvc", "toastr", "$window", "$timeout"];
     angular.module("Product")
         .controller("PortalProductController", PortalProductController);
 
-    function PortalProductController(ProductSvc, toastr) {
+    function PortalProductController(ProductSvc, toastr, $window, $timeout) {
         var portal = this;
         portal.tinymceOptions = {
             plugins: 'link image code',
@@ -214,6 +221,37 @@
                     // console.log("resp", resp);
                     if (resp.status == 200) {
                         toastr.success("Thêm sản phẩm thành công");
+                        $timeout(function() {
+                            window.location.href = $window.settings.services.webUrl + "/portal/product/" + portal.form.slug + "/edit";
+                        }, 2000)
+                    } else {
+                        toastr.error("Xảy ra lỗi");
+                    }
+                })
+                .catch(function(err) {
+                    toastr.error("Xảy ra lỗi");
+                });
+        };
+        portal.updateProduct = function(isValid) {
+            if (!isValid) {
+                toastr.error("Kiểm tra dữ liệu form");
+                return;
+            }
+            ProductSvc.updateProduct({
+                    productId: portal.form._id,
+                    title: portal.form.title,
+                    price: portal.form.price,
+                    description: portal.form.description,
+                    slug: portal.form.slug,
+                    imageLink: portal.form.imageLink,
+                    bannerLink: portal.form.bannerLink,
+                    intro: portal.form.intro,
+                })
+                .then(function(resp) {
+                    // console.log("resp", resp);
+                    if (resp.status == 200) {
+                        toastr.success("Sửa sản phẩm thành công");
+                        portal.form = resp.data;
                     } else {
                         toastr.error("Xảy ra lỗi");
                     }
@@ -247,6 +285,18 @@
                 });
             }
         };
+
+        portal.getProduct = function(slug) {
+            if (!slug) {
+                window.location.href = $window.settings.services.webUrl + "/portal/product"
+            } else {
+                ProductSvc.detailProduct({ slug }).then(function(resp) {
+                    if (resp.status == 200) {
+                        portal.form = resp.data;
+                    }
+                });
+            }
+        };
     }
 })();
 (function() {
@@ -263,6 +313,9 @@
             },
             createProduct: function(data) {
                 return $http.post(apiPath + "/api/product/createProduct", data);
+            },
+            updateProduct: function(data) {
+                return $http.post(apiPath + "/api/product/updateProduct", data);
             },
             detailProduct: function(data) {
                 return $http.post(apiPath + "/api/product/detailProduct", data);

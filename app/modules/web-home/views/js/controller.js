@@ -13,6 +13,13 @@
                 // console.log("resp", resp);
                 if (resp.status == 200) {
                     home.productList = resp.data;
+                    home.productBannerList = resp.data.filter(function(i) {
+                        if (i.banner) {
+                            i.intro = $sce.trustAsHtml(i.intro);
+                            return i;
+                        }
+                    });
+                    console.log(home.productBannerList);
                 }
             });
         };
