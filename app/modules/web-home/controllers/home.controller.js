@@ -1,6 +1,9 @@
 'use strict';
 const mongoose = require('mongoose');
 const Product = mongoose.model('Product');
+const striptags = require('striptags');
+const Entities = require('html-entities').AllHtmlEntities;
+const entities = new Entities();
 
 exports.index = {
     handler: function(request, reply) {
@@ -21,7 +24,7 @@ exports.detail = {
         Product.findOne({
                 slug: slug
             })
-            .select("title image")
+            .select("title image intro")
             .lean()
             .then(function(product) {
                 if (product) {
@@ -29,7 +32,8 @@ exports.detail = {
                         slug: slug,
                         meta: {
                             title: product.title,
-                            image: request.server.configManager.get("web.settings.services.webUrl") + "/files/products/" + product._id + "/" + product.image
+                            image: request.server.configManager.get("web.settings.services.webUrl") + "/files/products/" + product._id + "/" + product.image,
+                            description: entities.decode(striptags(product.intro))
                         }
                     });
                 } else {
