@@ -31,6 +31,11 @@ exports.register = function(server, options, next) {
         config: Controller.productList
     });
     server.route({
+        method: 'GET',
+        path: '/api/product/productBanner',
+        config: Controller.productBanner
+    });
+    server.route({
         method: 'POST',
         path: '/api/product/order',
         config: Controller.order

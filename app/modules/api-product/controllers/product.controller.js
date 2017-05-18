@@ -101,7 +101,14 @@ exports.createProduct = {
     handler: function(request, reply) {
         let { title, image, description, price, imageLink, bannerLink, intro } = request.payload;
         let slug = request.pre.slug.toLowerCase();
-        let product = new Product({ title, slug, image, description, price, intro });
+        let product = new Product({
+            title,
+            slug,
+            image,
+            description: description ? description.replace(/href="([^"]+)"/g, "href='#'") : "",
+            price,
+            intro: intro ? intro.replace(/href="([^"]+)"/g, "href='#'") : ""
+        });
         product.save()
             .then(function(product) {
                 let parallel = [];
@@ -150,8 +157,8 @@ exports.updateProduct = {
                     if (product) {
                         product.title = title;
                         product.slug = slug;
-                        product.description = description;
-                        product.intro = intro;
+                        product.description = description ? description.replace(/href="([^"]+)"/g, "href='#'") : "";
+                        product.intro = intro ? intro.replace(/href="([^"]+)"/g, "href='#'") : "";
                         product.price = price;
                         let parallel = [];
                         if (imageLink) {
@@ -213,6 +220,19 @@ exports.detailProduct = {
 exports.productList = {
     handler: function(request, reply) {
         Product.find()
+            .sort("-created")
+            .lean()
+            .then(function(products) {
+                return reply(products);
+            });
+    }
+};
+
+exports.productBanner = {
+    handler: function(request, reply) {
+        Product.find({
+                banner: { $ne: undefined }
+            })
             .sort("-created")
             .lean()
             .then(function(products) {

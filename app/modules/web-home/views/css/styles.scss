@@ -33,6 +33,9 @@
             }
         }
     }
+    .section-title {
+        text-transform: uppercase;
+    }
 }
 
 #order-form {
@@ -68,4 +71,23 @@
 
 .spacing-20 {
     padding: 10px 0;
+}
+
+@media only screen and (max-width: 767px) {
+    .text-center-mobile {
+        text-align: center;
+    }
+}
+
+.product-info-title {
+    font-size: 20px;
+    font-weight: 600;
+    background-color: #419641;
+    color: #fff;
+    padding: 10px 15px;
+}
+
+.product-info {
+    padding: 20px;
+    border: 1px solid #eee;
 }

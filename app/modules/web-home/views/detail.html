@@ -5,10 +5,10 @@
                 <div class="col-sm-6">
                     <img class="img-responsive img-thumbnail" src="/files/products/{[home.productDetail._id]}/{[home.productDetail.image]}" alt="Hình sản phẩm">
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-center-mobile">
                     <h2>{[home.productDetail.title]}</h2>
                     <div ng-bind-html="home.productDetail.intro"></div>
-                    <h2 class="text-success"><span class="glyphicon glyphicon-leaf"></span> {[home.productDetail.price | vndCurrency]}</h2>
+                    <h2 class="text-success">{[home.productDetail.price | vndCurrency]}</h2>
                     <hr>
                     <button type="button" class="btn btn-info" ng-click="home.changeOrderCount(true)">+</button>
                     <button type="button" class="btn btn-default" disabled><strong>{[home.orderCount]}</strong></button>
@@ -25,14 +25,8 @@
     <div class="spacing-20"></div>
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3>Mô tả sản phẩm</h3>
-                </div>
-                <div class="panel-body">
-                    <div ng-bind-html="home.productDetail.description"></div>
-                </div>
-            </div>
+            <div class="product-info-title">Thông tin</div>
+            <div class="product-info" ng-bind-html="home.productDetail.description"></div>
         </div>
     </div>
     <div class='mfp mfp-hide panel panel-default' id='order-form'>

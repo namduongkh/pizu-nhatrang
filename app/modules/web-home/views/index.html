@@ -1,30 +1,10 @@
 <div id="mod-home" ng-controller="HomeController as home" ng-init="home.loadPage()">
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-        <!-- Indicators -->
-        <ol class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="{[key]}" class="{[key==0?'active':'']}" ng-repeat="(key,product) in home.productBannerList track by product._id"></li>
-        </ol>
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner">
-            <a href="/san-pham/{[product.slug || product._id]}" style="height:300px;background:url(/files/products/{[product._id]}/{[product.banner]}) center center no-repeat;background-size:cover;" class="item {[key==0?'active':'']}" ng-repeat="(key,product) in home.productBannerList track by product._id">
-                <div class="carousel-caption">
-                    <h2 ng-bind="product.title"></h2>
-                </div>
-            </a>
-        </div>
-        <!-- Left and right controls -->
-        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="right carousel-control" href="#myCarousel" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-    <div class="spacing-20"></div>
     <div class="row" ng-if="home.productList">
-        <div class="col-xs-4 " ng-repeat="product in home.productList track by product._id">
+        <div class="col-lg-12">
+            <h3 class="text-center section-title">Danh sách sản phẩm</h3>
+            <div class="spacing-20"></div>
+        </div>
+        <div class="col-sm-4 col-xs-6" ng-repeat="product in home.productList track by product._id">
             <a class="product-item" href="/san-pham/{[product.slug || product._id]}">
                 <div class="product-item-wrapper">
                     <div class="product-item-image" style="background: #eee url(/files/products/{[product._id]}/medium/{[product.image]}) no-repeat center center;background-size: cover;">

@@ -22,21 +22,25 @@
     {{/each}}
 </head>
 
-<body ng-app="HapiApp" ng-controller="UserController as userCtrl">
-    <!--Navigation-->
-    {{> navigation}}
-
-    <!-- Main Content -->
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1">
-                {{{content}}}
+<body ng-app="HapiApp" ng-controller="CoreController as coreCtrl">
+    <div  ng-controller="UserController as userCtrl">
+        <!--Navigation-->
+        {{> navigation}}
+        {{> slider}}
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                </div>
+                <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1">
+                    {{{content}}}
+                </div>
             </div>
         </div>
+        <hr>
+        <!-- Footer -->
+        {{> footer}}
     </div>
-    <hr>
-    <!-- Footer -->
-    {{> footer}}
 </body>
 
 </html>

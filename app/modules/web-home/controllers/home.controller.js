@@ -8,7 +8,8 @@ exports.index = {
         return reply.view('web-home/views/index', {
             meta: {
                 title: "Trang chủ"
-            }
+            },
+            invokeSlider: true
         });
     }
 };

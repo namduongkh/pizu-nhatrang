@@ -27,7 +27,7 @@
                     password: userCtrl.form.password,
                 })
                 .then(function(resp) {
-                    console.log("Resp", resp);
+                    // console.log("Resp", resp);
                     $cookies.put('token', resp.data.token, {
                         path: "/"
                     });
