@@ -7,6 +7,7 @@
     function UserController(UserService, $cookies, $rootScope, toastr, $timeout) {
         var userCtrl = this;
         userCtrl.accountInfo = {};
+        userCtrl.loading = true;
 
         userCtrl.getAccount = function() {
             UserService.account().then(function(resp) {
@@ -16,6 +17,7 @@
                         userCtrl.accountInfo.isAdmin = true;
                     }
                 }
+                userCtrl.loading = false;
             });
         };
 

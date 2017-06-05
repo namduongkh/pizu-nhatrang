@@ -23,7 +23,7 @@
 </head>
 
 <body ng-app="HapiApp" ng-controller="CoreController as coreCtrl">
-    <div  ng-controller="UserController as userCtrl">
+    <div  ng-controller="UserController as userCtrl" class="is-loading" show-loading="userCtrl.loading">
         <!--Navigation-->
         {{> navigation}}
         {{> slider}}
