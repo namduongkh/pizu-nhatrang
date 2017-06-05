@@ -1,8 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    bcrypt = require('bcrypt-nodejs');
+    Schema = mongoose.Schema;
 
 const SALT_LENGTH = 9;
 
