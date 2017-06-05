@@ -4,7 +4,7 @@ const User = mongoose.model('User');
 const Boom = require('boom');
 const JWT = require('jsonwebtoken');
 const ErrorHandler = require("../../../utils/error.js");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt-nodejs');
 
 exports.index = {
     handler: function(request, reply) {
