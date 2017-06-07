@@ -265,6 +265,7 @@ exports.order = {
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
+                console.log("error", error);
                 return reply(false);
                 // return console.log(error);
             }
