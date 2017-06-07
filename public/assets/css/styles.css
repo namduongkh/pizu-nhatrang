@@ -28,17 +28,12 @@ footer {
       color: #fff; }
   footer .admin {
     font-size: 10px; }
+  @media only screen and (max-width: 767px) {
+    footer .copyright {
+      position: static; } }
 
 .is-loading {
   display: none; }
-
-.edit-product-image {
-  max-height: 100px;
-  display: block; }
-
-@media only screen and (max-width: 414px) {
-  #mod-home .col-xs-6 {
-    width: 100%; } }
 
 #mod-home .product-item {
   color: #555;
@@ -107,3 +102,11 @@ footer {
   font-size: 10px;
   color: red;
   font-style: italic; }
+
+.edit-product-image {
+  max-height: 100px;
+  display: block; }
+
+@media only screen and (max-width: 414px) {
+  #mod-home .col-xs-6 {
+    width: 100%; } }
