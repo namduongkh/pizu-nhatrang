@@ -3,6 +3,10 @@
         <div class="col-md-12">
             <h1>Giỏ hàng</h1>
             <hr>
+            <div ng-if="userCtrl.orderSuccess">
+                <strong ng-bind="userCtrl.orderSuccess" class="text-success"></strong>
+                <div class="spacing-20"></div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover table-striped table-bordered">
                     <tr>

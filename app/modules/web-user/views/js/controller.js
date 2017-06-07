@@ -116,6 +116,10 @@
 
         userCtrl.confirmOrder = function(valid) {
             userCtrl.submitted = true;
+            if (!userCtrl.cart.products || !userCtrl.cart.products.length) {
+                toastr.error('Chưa có sản phẩm nào trong giỏ!', 'Lỗi!');
+                return;
+            }
             if (!valid || !userCtrl.cart.user.user_address) {
                 toastr.error('Thông tin đặt hàng chưa hợp lệ!', 'Lỗi!');
                 return;
@@ -125,8 +129,15 @@
                 .then(function(resp) {
                     // console.log('resp', resp);
                     if (resp.status == 200 && resp.data) {
-                        toastr.success('Đặt hàng thành công, đơn hàng đang được xử lý', 'Thành công!');
-                        $.magnificPopup.close();
+                        userCtrl.orderSuccess = "Đặt hàng thành công, đơn hàng sẽ được vận chuyển sớm đến bạn.";
+                        toastr.success(userCtrl.orderSuccess, 'Thành công!');
+                        userCtrl.cart = {
+                            user: userCtrl.cart.user,
+                            products: [],
+                            allTotal: 0
+                        };
+                        userCtrl.updateCart();
+                        // $.magnificPopup.close();
                     } else {
                         toastr.error('Có lỗi xảy ra, liên hệ 01262346655 để được hỗ trợ!', 'Lỗi!');
                     }
