@@ -10,14 +10,6 @@ const nodemailer = require('nodemailer');
 const Jimp = require("jimp");
 const sizeOf = require('image-size');
 
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'openness.sender.email@gmail.com',
-        pass: 'phongnguyen.94'
-    }
-});
-
 function checkSlug(request, reply) {
     let { slug } = request.payload;
     Product.findOne({
@@ -243,6 +235,13 @@ exports.productBanner = {
 
 exports.order = {
     handler: function(request, reply) {
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'openness.sender.email@gmail.com',
+                pass: 'phongnguyen.94'
+            }
+        });
         let { product_name, product_count, product_price, user_name, user_phone, user_email, user_note, user_address } = request.payload;
         // setup email data with unicode symbols
         let mailOptions = {
