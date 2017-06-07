@@ -4,7 +4,7 @@
     angular.module("User")
         .controller("UserController", UserController);
 
-    function UserController(UserService, $cookies, $rootScope, toastr, $timeout) {
+    function UserController(UserService, $cookies, $rootScope, toastr, $timeout, ProductSvc) {
         var userCtrl = this;
         userCtrl.accountInfo = {};
         userCtrl.loading = true;
@@ -62,6 +62,81 @@
                 .catch(function(resp) {
                     var error = resp.data;
                     toastr.error(error.message || error, "Thông báo!");
+                });
+        };
+
+        userCtrl.loadCart = function() {
+            UserService.getCart().then(function(resp) {
+                if (resp.status == 200) {
+                    userCtrl.cart = resp.data;
+                    userCtrl.updateCart();
+                }
+            });
+        };
+
+        userCtrl.removeCartItem = function(id) {
+            if (confirm("Bạn có chắn chắc muốn xóa?")) {
+                UserService.removeCartItem({
+                    id: id
+                }).then(function(resp) {
+                    if (resp.status == 200) {
+                        userCtrl.cart = resp.data;
+                        userCtrl.updateCart();
+                    }
+                });
+            }
+        };
+
+        userCtrl.updateCart = function() {
+            userCtrl.cart.allTotal = 0;
+            // for (var i = 0; i < userCtrl.cart.products.length; i++) {
+            //     let product = userCtrl.cart.products[i];
+            //     product.total = Number(product.count) * Number(product.price);
+            //     userCtrl.cart.allTotal += product.total;
+            //     userCtrl.cart.products = product;
+            // }
+            userCtrl.cart.products = userCtrl.cart.products.map(function(product) {
+                product.total = Number(product.count) * Number(product.price);
+                userCtrl.cart.allTotal += product.total;
+                return product;
+            });
+            UserService.updateCart({ cart: userCtrl.cart });
+        };
+
+        userCtrl.changeCount = function(product, type) {
+            if (type) {
+                product.count++;
+            } else {
+                product.count--;
+            }
+            product.count = product.count < 1 ? 1 : product.count;
+            product.count = product.count > 5 ? 5 : product.count;
+            userCtrl.updateCart();
+        };
+
+        userCtrl.confirmOrder = function(valid) {
+            userCtrl.submitted = true;
+            if (!valid || !userCtrl.cart.user.user_address) {
+                toastr.error('Thông tin đặt hàng chưa hợp lệ!', 'Lỗi!');
+                return;
+            }
+            userCtrl.submitting = true;
+            ProductSvc.orderProduct(userCtrl.cart)
+                .then(function(resp) {
+                    // console.log('resp', resp);
+                    if (resp.status == 200 && resp.data) {
+                        toastr.success('Đặt hàng thành công, đơn hàng đang được xử lý', 'Thành công!');
+                        $.magnificPopup.close();
+                    } else {
+                        toastr.error('Có lỗi xảy ra, liên hệ 01262346655 để được hỗ trợ!', 'Lỗi!');
+                    }
+                    userCtrl.submitted = false;
+                    userCtrl.submitting = false;
+                })
+                .catch(function() {
+                    toastr.error('Có lỗi xảy ra, liên hệ 01262346655 để được hỗ trợ!', 'Lỗi!');
+                    userCtrl.submitted = false;
+                    userCtrl.submitting = false;
                 });
         };
     }

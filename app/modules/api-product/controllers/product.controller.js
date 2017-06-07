@@ -9,6 +9,7 @@ const async = require('async')
 const nodemailer = require('nodemailer');
 const Jimp = require("jimp");
 const sizeOf = require('image-size');
+const JWT = require('jsonwebtoken');
 
 function checkSlug(request, reply) {
     let { slug } = request.payload;
@@ -99,7 +100,8 @@ exports.createProduct = {
             image,
             description: description ? description.replace(/href="([^"]+)"/g, "href='#'") : "",
             price,
-            intro: intro ? intro.replace(/href="([^"]+)"/g, "href='#'") : ""
+            intro: intro ? intro.replace(/href="([^"]+)"/g, "href='#'") : "",
+            shortId: randomID(6)
         });
         product.save()
             .then(function(product) {
@@ -152,6 +154,9 @@ exports.updateProduct = {
                         product.description = description ? description.replace(/href="([^"]+)"/g, "href='#'") : "";
                         product.intro = intro ? intro.replace(/href="([^"]+)"/g, "href='#'") : "";
                         product.price = price;
+                        if (!product.shortId) {
+                            product.shortId = randomID(6);
+                        }
                         let parallel = [];
                         if (imageLink) {
                             parallel.push(function(cb) {
@@ -242,23 +247,42 @@ exports.order = {
                 pass: 'phongnguyen.94'
             }
         });
-        let { product_name, product_count, product_price, user_name, user_phone, user_email, user_note, user_address } = request.payload;
+        let { user, products, allTotal } = request.payload;
+        let productHtml = "";
+        for (var i = 0; i < products.length; i++) {
+            productHtml += `<tr>
+                                <td style="border:1px solid #555">${products[i].title}</td>
+                                <td style="border:1px solid #555">${products[i].price}</td>
+                                <td style="border:1px solid #555">${products[i].count}</td>
+                                <td style="border:1px solid #555">${products[i].total}</td>
+                            </tr>`;
+        }
         // setup email data with unicode symbols
         let mailOptions = {
             from: 'openness.sender.email@gmail.com', // sender address
             to: 'namduong.kh94@gmail.com', // list of receivers
-            subject: 'Đơn đặt hàng ' + product_name + " " + new Date().toLocaleDateString(), // Subject line
-            // text: 'Hello world ?', // plain text body
-            html: `\
-                <p>Sản phẩm: ${product_name}</p>
-                <p>Số lượng: ${product_count}</p>
-                <p>Giá bán: ${product_price}</p>
-                <p>Người mua: ${user_name}</p>
-                <p>SĐT: ${user_phone}</p>
-                <p>Địa chỉ: ${user_address}</p>
-                <p>Email: ${user_email || ''}</p>
-                <p>Ghi chú: ${user_note || ''}</p>
-            ` // html body
+            subject: 'Đơn đặt hàng của ' + user.user_name + " " + new Date().toLocaleString(), // Subject line
+            // text: JSON.stringify(request.payload), // plain text body
+            html: `
+                <p>Người mua: ${user.user_name}</p>
+                <p>SĐT: ${user.user_phone}</p>
+                <p>Địa chỉ: ${user.user_address}</p>
+                <p>Email: ${user.user_email || ''}</p>
+                <p>Ghi chú: ${user.user_note || ''}</p>
+                <p>
+                    <table style="border:1px solid #555">
+                        <tr>
+                            <th style="border:1px solid #555">Tên sản phẩm</th>
+                            <th style="border:1px solid #555">Giá</th>
+                            <th style="border:1px solid #555">Số lượng</th>
+                            <th style="border:1px solid #555">Thành tiền</th>
+                        </tr>
+                        ${productHtml}
+                    </table>
+                </p>
+                <p>Tổng cộng: ${allTotal}</p>
+            `,
+            // html body
         };
 
         // send mail with defined transport object
@@ -288,6 +312,66 @@ exports.deleteProduct = {
             })
             .catch(function() {
                 return reply(false);
+            });
+    }
+};
+
+function randomID(length) {
+    let randomCharacter = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ";
+    let result = "";
+    for (var i = 0; i < length; i++) {
+        result += randomCharacter[Math.floor((Math.random() * randomCharacter.length) + 0)];
+    }
+    console.log("result", result);
+    return result;
+}
+
+exports.addCart = {
+    handler: function(request, reply) {
+        let { productId, count } = request.payload;
+        let { cart } = request.state;
+        let cookieOptions = request.server.configManager.get('web.cookieOptions');
+        const secret = request.server.configManager.get('web.jwt.secret');
+        if (!cart) {
+            cart = {
+                user: {},
+                products: []
+            };
+        } else {
+            cart = JWT.decode(cart);
+        }
+        // console.log("Cart", cart);
+        Product.findOne({
+                _id: productId
+            })
+            .lean()
+            .then(function(product) {
+                if (product) {
+                    let exist = false;
+                    for (var i in cart.products) {
+                        if (cart.products[i].id == product._id) {
+                            cart.products[i].count += Number(count);
+                            // cart.products[i].total += product.price * cart.products[i].count;
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        cart.products.unshift({
+                            id: product._id,
+                            title: product.title,
+                            count: Number(count),
+                            price: product.price,
+                            // total: product.price * Number(count)
+                        });
+                    }
+                }
+                // console.log("Cart", cart);
+                cart = JWT.sign(cart, secret);
+                return reply({
+                        status: true
+                    })
+                    .state("cart", cart, cookieOptions);
             });
     }
 };

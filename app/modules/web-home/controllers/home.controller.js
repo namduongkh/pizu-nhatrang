@@ -43,3 +43,21 @@ exports.detail = {
 
     }
 };
+
+exports.detailShortId = {
+    handler: function(request, reply) {
+        let { shortId } = request.params;
+        Product.findOne({
+                shortId: shortId
+            })
+            .select("slug")
+            .lean()
+            .then(function(product) {
+                if (product) {
+                    return reply.redirect("/san-pham/" + product.slug);
+                } else {
+                    return reply.redirect("/khong-tim-thay-noi-dung")
+                }
+            });
+    }
+};

@@ -41,6 +41,24 @@ exports.register = function(server, options, next) {
         config: Controller.generateAdmin
     });
 
+    server.route({
+        method: 'GET',
+        path: '/api/user/getCart',
+        config: Controller.getCart
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/api/user/removeCartItem',
+        config: Controller.removeCartItem
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/api/user/updateCart',
+        config: Controller.updateCart
+    });
+
     next();
 };
 

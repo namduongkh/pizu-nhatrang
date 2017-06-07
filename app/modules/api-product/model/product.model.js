@@ -46,6 +46,11 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    shortId: {
+        type: String,
+        trim: true,
+        unique: true
+    }
 }, {
     collection: 'products'
 });

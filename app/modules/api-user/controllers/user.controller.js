@@ -143,3 +143,69 @@ exports.generateAdmin = {
         }
     }
 };
+
+exports.getCart = {
+    handler: function(request, reply) {
+        let { cart } = request.state;
+        let cookieOptions = request.server.configManager.get('web.cookieOptions');
+        const secret = request.server.configManager.get('web.jwt.secret');
+        if (!cart) {
+            cart = {
+                user: {},
+                products: []
+            };
+        } else {
+            cart = JWT.decode(cart);
+        }
+        return reply(cart);
+    }
+};
+
+exports.removeCartItem = {
+    handler: function(request, reply) {
+        let { id } = request.payload;
+        let { cart } = request.state;
+        let cookieOptions = request.server.configManager.get('web.cookieOptions');
+        const secret = request.server.configManager.get('web.jwt.secret');
+        if (!cart) {
+            cart = {
+                user: {},
+                products: []
+            };
+        } else {
+            cart = JWT.decode(cart);
+        }
+        let index = -1;
+        for (var i in cart.products) {
+            if (cart.products[i].id == id) {
+                index = i;
+                break;
+            }
+        }
+        if (index !== -1) {
+            cart.products.splice(index, 1);
+        }
+        return reply({
+                status: true
+            })
+            .state("cart", cart = JWT.sign(cart, secret), cookieOptions);
+    }
+};
+
+exports.updateCart = {
+    handler: function(request, reply) {
+        let { cart } = request.payload;
+        let cookieOptions = request.server.configManager.get('web.cookieOptions');
+        const secret = request.server.configManager.get('web.jwt.secret');
+        if (!cart) {
+            cart = {
+                user: {},
+                products: []
+            };
+        }
+        return reply({
+                status: true
+            })
+            .state("cart", cart = JWT.sign(cart, secret), cookieOptions);
+    }
+};

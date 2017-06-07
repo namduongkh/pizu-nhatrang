@@ -25,3 +25,13 @@ exports.dangKy = {
         });
     },
 };
+
+exports.gioHang = {
+    handler: function(request, reply) {
+        return reply.view('web-user/views/cart', {
+            meta: {
+                title: "Giỏ hàng"
+            }
+        });
+    },
+};

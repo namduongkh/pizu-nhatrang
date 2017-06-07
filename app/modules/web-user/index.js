@@ -17,6 +17,12 @@ exports.register = function(server, options, next) {
         config: Controller.dangKy
     });
 
+    server.route({
+        method: 'GET',
+        path: '/gio-hang',
+        config: Controller.gioHang
+    });
+
     next();
 };
 

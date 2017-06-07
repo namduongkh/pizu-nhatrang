@@ -24,6 +24,9 @@
             deleteProduct: function(data) {
                 return $http.post(apiPath + "/api/product/deleteProduct", data);
             },
+            addCart: function(data) {
+                return $http.post(apiPath + "/api/product/addCart", data);
+            },
         };
     }
 })();

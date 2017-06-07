@@ -40,6 +40,11 @@ exports.register = function(server, options, next) {
         path: '/api/product/order',
         config: Controller.order
     });
+    server.route({
+        method: 'POST',
+        path: '/api/product/addCart',
+        config: Controller.addCart
+    });
 
     next();
 };

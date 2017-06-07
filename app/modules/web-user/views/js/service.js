@@ -36,6 +36,26 @@
                     data: data
                 });
             },
+            getCart: function() {
+                return $http({
+                    method: "GET",
+                    url: apiPath + "/api/user/getCart",
+                });
+            },
+            removeCartItem: function(data) {
+                return $http({
+                    method: "POST",
+                    url: apiPath + "/api/user/removeCartItem",
+                    data: data
+                });
+            },
+            updateCart: function(data) {
+                return $http({
+                    method: "POST",
+                    url: apiPath + "/api/user/updateCart",
+                    data: data
+                });
+            },
         }
     }
 })();

@@ -17,6 +17,12 @@ exports.register = function(server, options, next) {
         config: HomeController.detail
     });
 
+    server.route({
+        method: 'GET',
+        path: '/p/{shortId}',
+        config: HomeController.detailShortId
+    });
+
     next();
 };
 
