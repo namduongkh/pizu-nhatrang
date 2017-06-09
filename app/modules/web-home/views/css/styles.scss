@@ -32,6 +32,14 @@
                 color: #7db501;
             }
         }
+        .product-name {
+            display: -webkit-box;
+            text-overflow: ellipsis;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 16px;
+        }
     }
     .section-title {
         text-transform: uppercase;

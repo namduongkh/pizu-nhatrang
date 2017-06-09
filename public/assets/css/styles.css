@@ -61,6 +61,13 @@ footer {
     text-decoration: none; }
     #mod-home .product-item:hover .product-name {
       color: #7db501; }
+  #mod-home .product-item .product-name {
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 16px; }
 
 #mod-home .section-title {
   text-transform: uppercase; }

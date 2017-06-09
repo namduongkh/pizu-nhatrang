@@ -147,90 +147,42 @@ exports.getCredentials = function(request, reply) {
 //     });
 // };
 
-// exports.getMeta = function(request, reply) {
-//     var {
-//         getSetting
-//     } = request.server.plugins['api-setting'];
-//     let response = request.response;
-//     if (response.variety === 'view') {
-//         let config = request.server.configManager;
-//         let app = config.get('web.context.app');
-//         let title = app.title;
-//         var site = "Bidy";
-//         var hostname = request.info.hostname;
-//         if (hostname == 'fig.bidy.vn') {
-//             site = "Figure";
-//         }
-//         app.title = title.replace("%site%", site);
-//         let description = response.source.context.meta.description;
-//         if (response.source.context.meta) {
-//             if (response.source.context.meta.title) {
-//                 response.source.context.meta.title = response.source.context.meta.title + ' - ' + app.title;
-//             } else {
-//                 response.source.context.meta.title = app.title;
-//             }
-//             if (description) {
-//                 response.source.context.meta.description = response.source.context.meta.description;
-//             } else {
-//                 response.source.context.meta.description = app.description;
-//             }
-//         } else {
-//             response.source.context.meta = app
-//         }
-//     }
-//     reply.continue();
-// };
+exports.getMeta = function(request, reply) {
+    let response = request.response;
+    if (response.variety === 'view') {
+        let config = request.server.configManager;
+        let app = config.get('web.meta');
+        let title = app.title;
+        let description = response.source.context.meta.description;
+        if (response.source.context.meta) {
+            if (response.source.context.meta.title) {
+                response.source.context.meta.title = response.source.context.meta.title + ' - ' + app.title;
+            } else {
+                response.source.context.meta.title = app.title;
+            }
+            if (description) {
+                response.source.context.meta.description = response.source.context.meta.description;
+            } else {
+                response.source.context.meta.description = app.description;
+            }
+        } else {
+            response.source.context.meta = app
+        }
+    }
+    reply.continue();
+};
 
 
-// exports.getMetaImage = function(request, reply) {
-//     var {
-//         getSetting
-//     } = request.server.plugins['api-setting'];
-//     let config = request.server.configManager;
-//     let response = request.response;
-//     if (response.variety === 'view') {
-//         if (!response.source.context.meta.image) {
-
-//             response.source.context.meta.image = config.get('web.context.settings.services.webUrl') + config.get('web.context.settings.shares.image');
-
-//             async.parallel({
-//                 share_image: function(callback) {
-//                     getSetting('share_image').then(function(value) {
-//                         callback(null, value);
-//                     }).catch(function(err) {
-//                         callback(err, null);
-//                     });
-//                 },
-//                 share_image_fig: function(callback) {
-//                     getSetting('share_image_fig').then(function(value) {
-//                         callback(null, value);
-//                     }).catch(function(err) {
-//                         callback(err, null);
-//                     });
-//                 },
-//             }, function(err, results) {
-//                 var hostname = request.info.hostname;
-//                 if (hostname == 'fig.bidy.vn') {
-//                     if (results.share_image_fig) {
-//                         response.source.context.meta.image = config.get('web.context.settings.services.webUrl') + '/files/settings/' + results.share_image_fig;
-//                         // console.log(response.source.context.meta);
-//                     }
-//                 } else {
-//                     if (results.share_image) {
-//                         response.source.context.meta.image = config.get('web.context.settings.services.webUrl') + '/files/settings/' + results.share_image;
-//                         // console.log(response.source.context.meta);
-//                     }
-//                 }
-
-//                 return reply.continue();
-//             });
-//         } else {
-//             return reply.continue();
-//         }
-//     } else {
-//         return reply.continue();
-//     }
-// };
+exports.getMetaImage = function(request, reply) {
+    let config = request.server.configManager;
+    let response = request.response;
+    if (response.variety === 'view') {
+        if (!response.source.context.meta.image) {
+            response.source.context.meta.image = config.get('web.settings.services.webUrl') + config.get('web.meta.image');
+        }
+    }
+    return reply.continue();
+};
 
 
 // var getStickerApi = [

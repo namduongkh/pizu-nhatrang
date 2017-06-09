@@ -52,7 +52,8 @@ module.exports = {
         },
         meta: {
             title: "Mỹ phẩm Pizu Nha Trang",
-            description: "Cửa hàng mỹ phẩm Pizu tại Nha Trang"
+            description: "Cửa hàng mỹ phẩm Pizu tại Nha Trang",
+            image: '/assets/img/share-image.jpg'
         }
     }
 };
